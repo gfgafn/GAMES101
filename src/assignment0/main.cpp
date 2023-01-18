@@ -41,9 +41,32 @@ int main()
     std::cout << "Example of output \n";
     std::cout << i << std::endl;
     // matrix add i + j
+    std::cout << i + j << std::endl;
     // matrix scalar multiply i * 2.0
+    std::cout << i * 2.0 << std::endl;
     // matrix multiply i * j
+    std::cout << i * j << std::endl;
     // matrix multiply vector i * v
+    std::cout << i * v << std::endl;
+
+    Eigen::Vector3f P(2, 1, 1);
+
+    Eigen::Matrix3f R, T, RT;
+
+    R << std::cos(45 / 180 * acos(-1)), -std::sin(45 / 180 * acos(-1)), 0,
+        std::sin(45 / 180 * acos(-1)), std::cos(45 / 180 * acos(-1)), 0,
+        0, 0, 1;
+
+    T << 1, 0, 1, 0, 1, 2, 0, 0, 1;
+
+    RT << std::cos(45 / 180 * acos(-1)), -std::sin(45 / 180 * acos(-1)), 1,
+        std::sin(45 / 180 * acos(-1)), std::cos(45 / 180 * acos(-1)), 2,
+        0, 0, 1;
+
+    assert(RT == T * R);
+
+    std::cout << "T * R * P" << std::endl;
+    std::cout << T * R * P << std::endl;
 
     return 0;
 }
