@@ -10,3 +10,39 @@
 3. 我们创建了 `Shader.hpp` 头文件并定义了 `fragment_shader_payload`，其中包括了 Fragment Shader 可能用到的参数。目前 `main.cpp` 中有三个 Fragment Shader，其中 fragment_shader 是按照法向量上色的样例 Shader，其余两个将由你来实现。
 4. 主渲染流水线开始于 `rasterizer::draw(std::vector<Triangle> &TriangleList)`.我们再次进行一系列变换，这些变换一般由 Vertex Shader 完成。在此之后，我们调用函数 `rasterize_triangle`.
 5. `rasterize_triangle` 函数与你在作业 2 中实现的内容相似。不同之处在于被设定的数值将不再是常数，而是按照 Barycentric Coordinates 对法向量、颜色、纹理颜色与底纹颜色 (Shading Colors) 进行插值。回忆我们上次为了计算 z value 而提供的 [alpha, beta, gamma]，这次你将需要将其应用在其他参数的插值上。你需要做的是计算插值后的颜色，并将 Fragment Shader 计算得到的颜色写入 framebuffer，这要求你首先使用插值得到的结果设置 fragment shader payload，并调用 fragment shader 得到计算结果。
+
+## 作业描述
+
+作业分为基础与提高两部分。
+
+### 基础
+
+在本次实验中，你需要完成的任务是:
+
+1. 修改函数 `rasterize_triangle(const Triangle& t)` in `rasterizer.cpp`: 在此处实现与作业 2 类似的插值算法，实现法向量、颜色、纹理颜色的插值。
+2. 修改函数 `get_projection_matrix()` in `main.cpp`: 将你自己在之前的实验中实现的投影矩阵填到此处，此时你可以运行 `./Rasterizer output.png normal` 来观察法向量实现结果。
+3. 修改函数 `phong_fragment_shader()` in `main.cpp`: 实现 Blinn-Phong 模型计算 Fragment Color.
+4. 修改函数 `texture_fragment_shader()` in `main.cpp`: 在实现 Blinn-Phong 的基础上，将纹理颜色视为公式中的 kd，实现 Texture Shading Fragment Shader.
+5. 修改函数 `bump_fragment_shader()` in `main.cpp`: 在实现 Blinn-Phong 的基础上，仔细阅读该函数中的注释，实现 Bump mapping.
+6. 修改函数 `displacement_fragment_shader()` in `main.cpp`: 在实现 Bump mapping 的基础上，实现 displacement mapping.
+
+### 提高
+
+- 尝试更多模型: 找到其他可用的 `.obj` 文件，提交渲染结果并把模型保存在 `/models` 目录下。这些模型也应该包含 Vertex Normal 信息。
+- 双线性纹理插值: 使用双线性插值进行纹理采样, 在 `Texture` 类中实现一个新方法 `Vector3f getColorBilinear(float u, float v)` 并通过 fragment shader 调用它。为了使双线性插值的效果更加明显，你应该考虑选择更小的纹理图。请同时提交纹理插值与双线性纹理插值的结果，并进行比较
+
+## 编译与运行
+
+```shell
+# 编译
+cd GAMES101
+mkdir build
+cd ./build
+cmake ../
+make
+
+# 运行
+cd build/src/assignment3
+# normal shader
+./Rasterizer_assignment3 output.png normal
+```
