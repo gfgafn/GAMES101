@@ -291,14 +291,10 @@ void rst::rasterizer::rasterize_triangle(const Triangle &t, const std::array<Eig
                 // TODO: Interpolate the attributes:
                 auto interpolated_color = interpolate(alpha, beta, gamma, t.color[0], t.color[1], t.color[2], 1);
                 auto interpolated_normal = interpolate(alpha, beta, gamma, t.normal[0], t.normal[1], t.normal[2], 1);
-                // auto interpolated_texcoords
+                auto interpolated_texcoords = interpolate(alpha, beta, gamma, t.tex_coords[0], t.tex_coords[1], t.tex_coords[2], 1);
                 auto interpolated_shadingcoords = interpolate(alpha, beta, gamma, view_pos[0], view_pos[1], view_pos[2], 1);
 
-                // Use: fragment_shader_payload payload( interpolated_color, interpolated_normal.normalized(), interpolated_texcoords, texture ? &*texture : nullptr);
-                fragment_shader_payload payload;
-                payload.color = interpolated_color;
-                payload.normal = interpolated_normal.normalized();
-                payload.view_pos = interpolated_shadingcoords;
+                fragment_shader_payload payload(interpolated_color, interpolated_normal.normalized(), interpolated_texcoords, texture ? &*texture : nullptr);
                 // Use: Instead of passing the triangle's color directly to the frame buffer, pass the color to the shaders first to get the final color;
                 auto pixel_color = fragment_shader(payload);
                 set_pixel(Vector2i(x, y), pixel_color);

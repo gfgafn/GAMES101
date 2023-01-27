@@ -47,4 +47,6 @@ cd build/src/assignment3
 ./Rasterizer_assignment3 output.png normal
 # Blinn-Phong shader
 ./Rasterizer_assignment3 output.png phong
+# texture shader
+./Rasterizer_assignment3 output.png texture
 ```
