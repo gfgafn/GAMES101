@@ -45,4 +45,6 @@ make
 cd build/src/assignment3
 # normal shader
 ./Rasterizer_assignment3 output.png normal
+# Blinn-Phong shader
+./Rasterizer_assignment3 output.png phong
 ```
