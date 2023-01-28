@@ -238,7 +238,12 @@ void Renderer::Render(const Scene &scene)
             // Also, don't forget to multiply both of them with the variable *scale*, and
             // x (horizontal) variable with the *imageAspectRatio*
 
-            Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
+            // 将像素坐标从图像平面空间变换的摄像机成像平面空间
+            // [[0, scene.width], [0, scene.height]]^2 --> [[-2tan(fov/2) * aspectRation, 2tan(fov/2) * aspectRation], [-2tan(fov/2), 2tan(fov/2)]]^2
+            x = ((2 * scale * imageAspectRatio) / scene.width) * ((i + 0.5) - scene.width / 2);
+            y = ((-2 * scale / scene.height)) * ((j + 0.5) - scene.height / 2);
+
+            Vector3f dir = normalize(Vector3f(x, y, -1)); // Don't forget to normalize this direction!
             framebuffer[m++] = castRay(eye_pos, dir, scene, 0);
         }
         UpdateProgress(j / (float)scene.height);
