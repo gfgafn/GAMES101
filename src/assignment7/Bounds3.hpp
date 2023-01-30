@@ -85,15 +85,31 @@ public:
     }
 
     inline bool IntersectP(const Ray &ray, const Vector3f &invDir,
-                           const std::array<int, 3> &dirIsNeg) const;
+                           const std::array<bool, 3> &dirIsNeg) const;
 };
 
 inline bool Bounds3::IntersectP(const Ray &ray, const Vector3f &invDir,
-                                const std::array<int, 3> &dirIsNeg) const
+                                const std::array<bool, 3> &dirIsNeg) const
 {
     // invDir: ray direction(x,y,z), invDir=(1.0/x,1.0/y,1.0/z), use this because Multiply is faster that Division
-    // dirIsNeg: ray direction(x,y,z), dirIsNeg=[int(x>0),int(y>0),int(z>0)], use this to simplify your logic
+    // dirIsNeg: ray direction(x,y,z), dirIsNeg=[bool(x<0),bool(y<0),bool(z<0)], use this to simplify your logic
     // TODO test if ray bound intersects
+
+    Vector3f t_max = (pMax - ray.origin) * invDir;
+    Vector3f t_min = (pMin - ray.origin) * invDir;
+
+    if (dirIsNeg[0])
+        std::swap(t_min.x, t_max.x);
+    if (dirIsNeg[1])
+        std::swap(t_min.y, t_max.y);
+    if (dirIsNeg[2])
+        std::swap(t_min.z, t_max.z);
+
+    float t_enter = std::max(t_min.x, std::max(t_min.y, t_min.z));
+    float t_exit = std::min(t_max.x, std::min(t_max.y, t_max.z));
+
+    // 对于只由一个平面组成且平面与坐标轴平面平行的物体，t_exit == t_enter
+    return (t_exit >= t_enter && t_exit >= 0);
 }
 
 inline Bounds3 Union(const Bounds3 &b1, const Bounds3 &b2)
