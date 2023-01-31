@@ -34,10 +34,10 @@ inline bool solveQuadratic(const float &a, const float &b, const float &c, float
 
 inline float get_random_float()
 {
-    // 避免在循环中多次初始化, 提高运行效率
-    static std::random_device dev;
-    static std::mt19937 rng(dev());
-    static std::uniform_real_distribution<float> dist(0.f, 1.f); // distribution in range [1, 6]
+    // 避免在循环中多次初始化, 提高运行效率; thread_local 避免了多线程间的资源竞争消耗
+    static thread_local std::random_device dev;
+    static thread_local std::mt19937 rng(dev());
+    static thread_local std::uniform_real_distribution<float> dist(0.f, 1.f); // distribution in range [1, 6]
 
     return dist(rng);
 }

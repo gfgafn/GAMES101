@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <omp.h>
 #include "Scene.hpp"
 #include "Renderer.hpp"
 
@@ -20,13 +21,18 @@ void Renderer::Render(const Scene &scene)
     float scale = tan(deg2rad(scene.fov * 0.5));
     float imageAspectRatio = scene.width / (float)scene.height;
     Vector3f eye_pos(278, 273, -800);
-    int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 16;
+    int spp = 128;
     std::cout << "SPP: " << spp << "\n";
+
+    std::cout << "omp_get_num_procs: " << omp_get_num_procs() << std::endl;
+
     for (uint32_t j = 0; j < scene.height; ++j)
     {
+        size_t indexOfLineHead = j * scene.width;
+
+#pragma omp parallel for num_threads(omp_get_num_procs()) shared(scene, framebuffer, imageAspectRatio, scale, spp, indexOfLineHead)
         for (uint32_t i = 0; i < scene.width; ++i)
         {
             // generate primary ray direction
@@ -37,9 +43,8 @@ void Renderer::Render(const Scene &scene)
             Vector3f dir = normalize(Vector3f(-x, y, 1));
             for (int k = 0; k < spp; k++)
             {
-                framebuffer[m] += scene.castRay(Ray(eye_pos, dir), 0) / spp;
+                framebuffer[indexOfLineHead + i] += scene.castRay(Ray(eye_pos, dir), 0) / spp;
             }
-            m++;
         }
         UpdateProgress(j / (float)scene.height);
     }
